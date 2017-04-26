@@ -1,27 +1,20 @@
 function [ind] = GenerateIndices()
-    b = 16;
-    treeDepth = 3;
-    nodes = (b^(treeDepth+1) - 1) / (b-1);
-    ind = ones(3,nodes);
+    %generate leaf level nodes
+    %level-3
+    ind = [-1,-1,1]';
     
-    depth = treeDepth;
-    while(depth >= 0)
-        if(depth == treeDepth)
-            [s1,e1] = GetStartingAndEndingIndices(b,depth);
-            for i=s1:e1
-                ind(1,i) = i;
-                ind(2,i) = i;
-            end
-        else
-            [s1,e1] = GetStartingAndEndingIndices(b,depth);
-            [s2,e2] = GetStartingAndEndingIndices(b,depth+1);
-            j = s2;
-            for i=s1:e1
-                ind(1,i) = ind(1,j);
-                ind(2,i) = ind(2,j+b-1);
-                j = j + b;
-            end
-        end
-        depth = depth - 1;
+    %one level higher
+    %level-2
+    i = 0;
+    for k=1:256
+        ind = [ind,[16*i + 1,16*(i+1),sqrt(16)]'];
+        i = i + 1;
+    end
+    
+    %level-1
+    i = 0;
+    for k=1:16
+        ind = [ind,[256*i + 1,256*(i+1),sqrt(256)]'];
+        i = i + 1;
     end
 end

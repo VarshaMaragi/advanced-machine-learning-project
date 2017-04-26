@@ -1,8 +1,8 @@
 function [V]=VectorizeImage(X)
     V = [];
-    if(size(X,1)==2 && size(X,2)==2)
-        V = reshape(X',[2,2]);
-    elseif(size(X,1)==1 && size(X,2)==1)
+    if(size(X,1) == 2 && size(X,2) == 2)
+        V = reshape(X',[1,4]);
+    elseif(size(X,1) == 1 && size(X,2) == 1)
             V = X;
     else
         [m,n] = size(X);
