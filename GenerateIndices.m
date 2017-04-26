@@ -1,24 +1,27 @@
 function [ind] = GenerateIndices()
-    ind = ones(3,21);
-    ind(1:2,1) = [1,16]; 
-    ind(1:2,2) = [1,4];
-    ind(1:2,3) = [5,8];
-    ind(1:2,4) = [9,12];
-    ind(1:2,5) = [13,16];
-    ind(1:2,6) = [1,1];
-    ind(1:2,7) = [2,2];
-    ind(1:2,8) = [3,3];
-    ind(1:2,9) = [4,4];
-    ind(1:2,10) = [5,5];
-    ind(1:2,11) = [6,6];
-    ind(1:2,12) = [7,7];
-    ind(1:2,13) = [8,8];
-    ind(1:2,14) = [9,9];
-    ind(1:2,15) = [10,11];
-    ind(1:2,16) = [11,11];
-        ind(1:2,17) = [12,12];
-        ind(1:2,18) = [13,13];
-        ind(1:2,19) = [14,14];
-        ind(1:2,20) = [15,15];
-        ind(1:2,21) = [16,16];
+    b = 16;
+    treeDepth = 3;
+    nodes = (b^(treeDepth+1) - 1) / (b-1);
+    ind = ones(3,nodes);
+    
+    depth = treeDepth;
+    while(depth >= 0)
+        if(depth == treeDepth)
+            [s1,e1] = GetStartingAndEndingIndices(b,depth);
+            for i=s1:e1
+                ind(1,i) = i;
+                ind(2,i) = i;
+            end
+        else
+            [s1,e1] = GetStartingAndEndingIndices(b,depth);
+            [s2,e2] = GetStartingAndEndingIndices(b,depth+1);
+            j = s2;
+            for i=s1:e1
+                ind(1,i) = ind(1,j);
+                ind(2,i) = ind(2,j+b-1);
+                j = j + b;
+            end
+        end
+        depth = depth - 1;
+    end
 end
