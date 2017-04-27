@@ -1,4 +1,4 @@
-function [Beta] = TreeGuidedRegression(X,Y,ind)
+function [Beta] = TreeGuidedRegression(X,Y,ind,lambda)
     opts = [];
     opts.init = 2;
     opts.tFlag = 5;
@@ -7,7 +7,7 @@ function [Beta] = TreeGuidedRegression(X,Y,ind)
     opts.nFlag = 0;
     opts.ind = ind;
     
-    lambda = 0.1;
+    %[beta,~] = tree_LeastR(X,Y,lambda,opts);
     %regression model for happiness
     tic;
     [beta1,funVal1] = tree_LeastR(X,Y(:,1),lambda,opts);
