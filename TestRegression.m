@@ -85,7 +85,7 @@ function [] = TestRegression()
 %     plot(lambdas,lassoRMSE,'g');
 %     legend('Grouped Tree Structure','Lasso');
 %     hold off;
-    figure('Name','Comparision of Grouped Tree Structure vs Lasso');
+    figure('Name','Comparision of Grouped Tree Structure vs Lasso for Regression');
     subplot(3,2,1);
     hold on;
     plot(lambdas,treeGuidedRMSE(1,:),'r');

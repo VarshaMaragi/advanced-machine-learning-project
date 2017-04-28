@@ -13,7 +13,7 @@ function [XTrain,YTrain,XTest,YTest] = GetTrainingAndTestingData(trainingSubject
                 I = imread(fileName);
                 I = imresize(I,[64,64]); 
                 XTrain = [XTrain;double(VectorizeImage(I))];
-                %if the image is happy, set the label to +1 else -1
+                %if the image is of type expression, set the label to +1 else -1
                 if( ~isempty( strfind(folder(i).name,expression) ) )
                     YTrain = [YTrain;1];
                 else
@@ -35,7 +35,7 @@ function [XTrain,YTrain,XTest,YTest] = GetTrainingAndTestingData(trainingSubject
                 I = imread(fileName);
                 I = imresize(I,[64,64]); 
                 XTest = [XTest;double(VectorizeImage(I))];
-                %if the image is happy, set the label to +1 else -1
+                %if the image is of type expression, set the label to +1 else -1
                 if( ~isempty( strfind(folder(i).name,expression) ) )
                     YTest = [YTest;1];
                 else
