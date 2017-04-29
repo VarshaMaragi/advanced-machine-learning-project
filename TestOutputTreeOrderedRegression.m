@@ -1,12 +1,15 @@
-function [] = TestRegression()
+function [] = TestOutputTreeOrderedRegression()
     mapFromIndexToFaces = containers.Map({1,2,3,4,5,6,7,8,9,10},...
         {'KA','KL','KM','KR','MK','NA','NM','TM','UY','YM'});
     
-    %preprocess the images before running regression
-    [X,Y,ind] = PreProcess();
-            
     lambdas = [5e-1,2e-1,1e-1,5e-2,2e-2,1e-2,5e-3,2e-3];
-    %lambdas = [5e-1,2e-1];
+    %lambdas = [5e-1,2e-1,1e-1,5e-2];
+    
+    %preprocess the images
+    [X,Y] = PreProcessForTreeOutput();
+    ind_t = [[-1,-1,1]',...
+        [1,2,sqrt(2)]',[3,4,sqrt(2)]',[5,6,sqrt(2)]'];
+    
     %six expressions
     treeGuidedRMSE = zeros(6,size(lambdas,2));
     lassoRMSE = zeros(6,size(lambdas,2));
@@ -18,9 +21,6 @@ function [] = TestRegression()
             %randomly generate training subjects
             trainingIndexes = datasample(1:10,8,'Replace',false);
             testingIndexes = setdiff(1:10,trainingIndexes);
-
-            %preprocess the images
-            %[X,Y,ind] = PreProcess();
 
             %get the training and testing subjects like 'KA','KL' etc
             trainingSubjects = values(mapFromIndexToFaces,num2cell(trainingIndexes));
@@ -40,9 +40,15 @@ function [] = TestRegression()
             for cell=YTrain
                 B = [B;cell{1,1}];
             end
+            
+            %append the data to itself for multi-task regression
+            ANew = [A;A;A;A;A;A];
+            
+            %do the same for y's
+            b = B(:);
 
             %tree guided sparsity
-            beta = TreeGuidedRegression(A,B,ind,lambdas(i));
+            beta = OutputTreeGuidedRegression(ANew,b,ind_t,lambdas(i));
 
             %lasso
             betaLasso = [];
@@ -81,14 +87,8 @@ function [] = TestRegression()
         %treeGuidedRMSE(end+1) = rmseForTreeGuided/10;
         %lassoRMSE(end+1) = rmseForLasso/10;
     end
-%     figure('Name','Happy');
-%     title('RMSE comparison for Grouped Tree Structure vs Lasso');
-%     hold on;
-%     plot(lambdas,treeGuidedRMSE,'r');
-%     plot(lambdas,lassoRMSE,'g');
-%     legend('Grouped Tree Structure','Lasso');
-%     hold off;
-    figure('Name','Comparison of Grouped Tree Structure vs Lasso for Regression');
+    
+    figure('Name','Comparison of Output Grouped Tree Structure vs Lasso for Regression');
     subplot(3,2,1);
     hold on;
     plot(lambdas,treeGuidedRMSE(1,:),'r');
@@ -137,4 +137,3 @@ function [] = TestRegression()
     title('Fear');
     hold off;
 end
-    

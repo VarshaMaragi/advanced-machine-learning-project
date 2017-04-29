@@ -2,9 +2,10 @@ function [] = TestLogisticRegression()
     mapFromIndexToFaces = containers.Map({1,2,3,4,5,6,7,8,9,10},...
         {'KA','KL','KM','KR','MK','NA','NM','TM','UY','YM'});
     
-    expressions = {'HA','SA','SU','AN','DI','FE'};
-    %lambdas = [5e-1,2e-1,1e-1,5e-2,2e-2,1e-2,5e-3,2e-3];
-    lambdas = linspace(0.15,0.5,10);
+    expressions = {'HA','SA','SU','AN','DI','FE','NE'};
+    subjectsToImages = LoadData();
+    lambdas = [5e-1,2e-1,1e-1,5e-2,2e-2,1e-2,5e-3,2e-3];
+    %lambdas = linspace(0.15,0.5,10);
     treeGuidedForAllExpressions = zeros(size(expressions,2),size(lambdas,2));
     lassoGuidedForAllExpression = zeros(size(expressions,2),size(lambdas,2));
     for k=1:size(expressions,2)
@@ -20,8 +21,43 @@ function [] = TestLogisticRegression()
                 %get the training and testing subjects like 'KA','KL' etc
                 trainingSubjects = values(mapFromIndexToFaces,num2cell(trainingIndexes));
                 testingSubjects = values(mapFromIndexToFaces,num2cell(testingIndexes));
-
-                [XTrain,YTrain,XTest,YTest] = GetTrainingAndTestingData(trainingSubjects,testingSubjects,expressions{k});
+                
+                XTrain = [];
+                YTrain = [];
+                for trainingSubject=trainingSubjects
+                    key = strcat(trainingSubject{1,1},'-',expressions(k));
+                    count = size( subjectsToImages(key{1,1}) , 1 );
+                    XTrain = [XTrain;subjectsToImages(key{1,1})];
+                    YTrain = [YTrain;ones(count,1)];
+                    
+                    %make other expressions as negative examples
+                    remainingExpressions = expressions(~ismember(expressions,expressions(k)));
+                    for remainingExpression=remainingExpressions
+                        key = strcat(trainingSubject{1,1},'-',remainingExpression{1,1});
+                        count = size( subjectsToImages(key) , 1 );
+                        XTrain = [XTrain;subjectsToImages(key)];
+                        YTrain = [YTrain;-1*ones(count,1)];
+                    end
+                end
+                
+                XTest = [];
+                YTest = [];
+                for testingSubject=testingSubjects
+                    key = strcat(testingSubject{1,1},'-',expressions(k));
+                    count = size( subjectsToImages(key{1,1}) , 1 );
+                    XTest = [XTest;subjectsToImages(key{1,1})];
+                    YTest = [YTest;ones(count,1)];
+                    
+                    %make other expressions as negative examples
+                    remainingExpressions = expressions(~ismember(expressions,expressions(k)));
+                    for remainingExpression=remainingExpressions
+                        key = strcat(testingSubject{1,1},'-',remainingExpression{1,1});
+                        count = size( subjectsToImages(key) , 1 );
+                        XTest = [XTest;subjectsToImages(key)];
+                        YTest = [YTest;-1*ones(count,1)];
+                    end
+                end
+                %[XTrain,YTrain,XTest,YTest] = GetTrainingAndTestingData(trainingSubjects,testingSubjects,expressions{k});
                 ind = GenerateIndices();
 
                 %train using tree-guided regularization
